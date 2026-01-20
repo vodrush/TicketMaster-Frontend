@@ -1,36 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import TicketForm from './components/TicketForm';
-import { getTickets, createTicket, updateTicket, deleteTicket } from './components/TicketService';
+import TicketList from './components/TicketList';
+import { deleteTicket, updateTicket } from './components/TicketService';
+import './App.css';
 
 function App() {
-    const [tickets, setTickets] = useState([])
-    
-    useEffect(() => {
+    const [tickets, setTickets] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const loadTickets = () => {
+        setLoading(true);
         fetch('http://172.16.112.75:8000/tickets')
             .then(r => r.json())
-            .then(data => setTickets(data))
+            .then(data => {
+                setTickets(data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error loading tickets:', error);
+                setLoading(false);
+            });
+    }
+
+    useEffect(() => {
+        loadTickets();
     }, []);
-    
+
+    const handleDelete = (id) => {
+        deleteTicket(id).then(() => {
+            loadTickets();
+        }).catch(error => console.error('Error deleting ticket:', error));
+    }
+
+    const handleStatusChange = (id, newStatus) => {
+        updateTicket(id, { status: newStatus }).then(() => {
+            loadTickets();
+        }).catch(error => console.error('Error updating ticket:', error));
+    }
+
     return (
-        <div>
-            <h1>Ticket Master</h1>
-            <TicketForm onTicketAdded={() => {
-                fetch('http://172.16.112.75:8000/tickets')
-                    .then(r => r.json())
-                    .then(data => setTickets(data))
-            }} />
-            <ul>
-                {tickets.map(ticket => (
-                    <li key={ticket.id}>
-                        <h2>{ticket.title}</h2>
-                        <p>{ticket.description}</p>
-                        <p>Status: {ticket.status}</p>
-                        <p>Priority: {ticket.priority}</p>
-                        <p>Tags: {ticket.tags ? ticket.tags.join(', ') : 'No tags'}</p>
-                    </li>
-                ))}
-            </ul>
-            
+        <div className="app">
+            <div className="app-header">
+            <h1>TicketMaster</h1>
+            </div>
+
+            <TicketForm onTicketAdded={loadTickets} />
+
+            {loading ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#b0b0b0' }}>
+                    Loading tickets...
+                </div>
+            ) : (
+                <TicketList
+                    tickets={tickets}
+                    onDelete={handleDelete}
+                    onStatusChange={handleStatusChange}
+                />
+            )}
         </div>
     )
 }
