@@ -9,7 +9,6 @@ function TicketForm({ onTicketAdded }) {
         priority: 'Medium',
         tags: ''
     });
-    const [successMessage, setSuccessMessage] = useState(false);
 
     const handleChange = (e) => {
         setFormData({
@@ -24,7 +23,7 @@ function TicketForm({ onTicketAdded }) {
             ...formData,
             tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
         };
-        createTicket(ticketToSubmit).then(() => {
+        createTicket(ticketToSubmit).then((newTicket) => {
             setFormData({
                 title: '',
                 description: '',
@@ -32,35 +31,26 @@ function TicketForm({ onTicketAdded }) {
                 priority: 'Medium',
                 tags: ''
             });
-            setSuccessMessage(true);
-            setTimeout(() => {
-                setSuccessMessage(false);
-            }, 3000);
-            onTicketAdded();
+            onTicketAdded(newTicket);
         });
     }
 
     return (
         <>
-            {successMessage && (
-                <div className="success-message">
-                    Ticket created successfully!
-                </div>
-            )}
             <form className="ticket-form" onSubmit={handleSubmit}>
                 <h2 style={{ marginTop: 0, color: '#61dafb', marginBottom: '20px' }}>
-                    Create New Ticket
+                    Créer un nouveau ticket
                 </h2>
 
                 <div className="form-group">
-                    <label htmlFor="title">Title *</label>
+                    <label htmlFor="title">Titre *</label>
                     <input
                         id="title"
                         type="text"
                         name="title"
                         value={formData.title}
                         onChange={handleChange}
-                        placeholder="Enter ticket title"
+                        placeholder="Entrez le titre du ticket"
                         required
                     />
                 </div>
@@ -72,55 +62,55 @@ function TicketForm({ onTicketAdded }) {
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
-                        placeholder="Describe your ticket..."
+                        placeholder="Décrivez votre ticket..."
                         required
                     />
                 </div>
 
                 <div className="form-row">
                     <div className="form-group">
-                        <label htmlFor="status">Status</label>
+                        <label htmlFor="status">Statut</label>
                         <select
                             id="status"
                             name="status"
                             value={formData.status}
                             onChange={handleChange}
                         >
-                            <option value="Open">Open</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Closed">Closed</option>
+                            <option value="Open">Ouvert</option>
+                            <option value="In Progress">En cours</option>
+                            <option value="Closed">Fermé</option>
                         </select>
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="priority">Priority</label>
+                        <label htmlFor="priority">Priorité</label>
                         <select
                             id="priority"
                             name="priority"
                             value={formData.priority}
                             onChange={handleChange}
                         >
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
+                            <option value="Low">Bas</option>
+                            <option value="Medium">Moyen</option>
+                            <option value="High">Élevé</option>
                         </select>
                     </div>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="tags">Tags (comma-separated)</label>
+                    <label htmlFor="tags">Tags (séparés par des virgules)</label>
                     <input
                         id="tags"
                         type="text"
                         name="tags"
                         value={formData.tags}
                         onChange={handleChange}
-                        placeholder="e.g. bug, feature, urgent"
+                        placeholder="ex: bug, fonctionnalité, urgent"
                     />
                 </div>
 
                 <button type="submit" className="form-button">
-                    Create Ticket
+                    Créer un ticket
                 </button>
             </form>
         </>
