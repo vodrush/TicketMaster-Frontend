@@ -1,70 +1,120 @@
-# Getting Started with Create React App
+# TicketMaster Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Interface web pour gérer les tickets. Construit avec **React 19** et **Create React App**.
 
-## Available Scripts
+## Installation
 
-In the project directory, you can run:
+### Prérequis
+- Node.js 16+
+- npm (inclus avec Node.js)
 
-### `npm start`
+### Étapes
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```bash
+# Installer les dépendances
+npm install
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# Lancer le serveur de développement
+npm start
+```
 
-### `npm test`
+L'app s'ouvre automatiquement sur `http://localhost:3000`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Fonctionnalités
 
-### `npm run build`
+- ✅ Voir la liste des tickets
+- ✅ Créer un nouveau ticket
+- ✅ Modifier le statut d'un ticket
+- ✅ Supprimer un ticket
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Structure du projet
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+src/
+├── App.js                    # Composant principal
+├── App.css                   # Styles
+├── index.js                  # Point d'entrée
+└── components/
+    ├── TicketForm.js         # Formulaire pour créer un ticket
+    ├── TicketList.js         # Liste des tickets
+    ├── TicketItem.js         # Un ticket individuel
+    └── TicketService.js      # Appels API
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Fichiers principaux
 
-### `npm run eject`
+### App.js
+Composant principal. Gère l'état des tickets et les appels API.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### components/TicketService.js
+Contient les fonctions pour communiquer avec le backend :
+- `getTickets()` : Récupère tous les tickets
+- `createTicket(data)` : Crée un nouveau ticket
+- `updateTicket(id, changes)` : Modifie un ticket
+- `deleteTicket(id)` : Supprime un ticket
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### components/TicketForm.js
+Formulaire pour créer un ticket. Envoie les données au backend.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### components/TicketList.js
+Affiche la liste des tickets. Utilise TicketItem pour chaque ticket.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### components/TicketItem.js
+Composant pour un ticket individuel. Boutons pour modifier/supprimer.
 
-## Learn More
+## Commandes utiles
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Développement
+```bash
+npm start     # Lance le serveur (http://localhost:3000)
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Tests
+```bash
+npm test      # Lance les tests
+```
 
-### Code Splitting
+### Production
+```bash
+npm run build # Crée une version optimisée dans le dossier 'build/'
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Configuration de l'API
 
-### Analyzing the Bundle Size
+L'URL du backend est configurée dans `TicketService.js`. Par défaut :
+```javascript
+'http://172.16.112.75:8000'
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+À modifier si le backend est sur une autre adresse.
 
-### Making a Progressive Web App
+## Structure d'un ticket
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```json
+{
+  "id": 1,
+  "title": "Titre du ticket",
+  "description": "Description",
+  "status": "Open",
+  "priority": "Medium",
+  "tags": ["feature"],
+  "createdAt": "2026-01-29T10:00:00Z",
+  "updatedAt": "2026-01-29T10:00:00Z"
+}
+```
 
-### Advanced Configuration
+## Points de statut
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- **Open** : Nouveau ticket
+- **In Progress** : En cours de traitement
+- **Closed** : Terminé
 
-### Deployment
+## Points de priorité
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- **Low** : Faible
+- **Medium** : Moyen
+- **High** : Élevé
 
-### `npm run build` fails to minify
+## Voir aussi
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Pour le backend : voir le repo [TicketMaster-Backend](../TicketMaster-Backend)
