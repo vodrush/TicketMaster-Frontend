@@ -1,16 +1,21 @@
+const BASE_URL = 'http://localhost:8000';
 
-function getTickets() {
-    return fetch('http://localhost:8000/tickets')
-        .then(response => response.json())
-        .then(data => {
-            console.log('Tickets fetched:', data);
-        })
-        .catch(error => {
-            console.error('Error fetching tickets:', error);
-        });
+
+const buildQuery = (params) => {
+  const qs = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== '' && v !== null && v !== undefined) qs.append(k, v);
+  });
+  return qs.toString();
+};
+
+function getTickets(filters = {}) {
+  const query = buildQuery(filters);
+  const url = query ? `${BASE_URL}/tickets?${query}` : `${BASE_URL}/tickets`;
+  return fetch(url).then(r => r.json());
 }
 function createTicket(data) {
-    return fetch('http://172.16.112.75:8000/tickets', {
+    return fetch(`${BASE_URL}/tickets`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
@@ -19,7 +24,7 @@ function createTicket(data) {
         .catch(error => console.error('Error:', error))
 }
 function updateTicket(id, changes) {
-    return fetch(`http://172.16.112.75:8000/tickets/${id}`, {
+    return fetch(`${BASE_URL}/tickets/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(changes)
@@ -28,7 +33,7 @@ function updateTicket(id, changes) {
         .catch(error => console.error('Error:', error))
 }
 function deleteTicket(id) {
-    return fetch(`http://172.16.112.75:8000/tickets/${id}`, {
+    return fetch(`${BASE_URL}/tickets/${id}`, {
         method: 'DELETE'
     })
         .then(response => response.json())

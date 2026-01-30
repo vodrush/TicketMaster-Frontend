@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { createTicket } from '../components/TicketService';
 
+const MAX_TITLE_LEN = 60;
+const MAX_DESC_LEN = 500;
+const MAX_TAGS_LEN = 120;
+
 function TicketForm({ onTicketAdded }) {
     const [formData, setFormData] = useState({
         title: '',
@@ -9,6 +13,7 @@ function TicketForm({ onTicketAdded }) {
         priority: 'Medium',
         tags: ''
     });
+    
 
     const handleChange = (e) => {
         setFormData({
@@ -19,8 +24,14 @@ function TicketForm({ onTicketAdded }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const trimmedTitle = formData.title.trim();
+        const trimmedDescription = formData.description.trim();
+        if (!trimmedTitle || !trimmedDescription) return;
+
         const ticketToSubmit = {
             ...formData,
+            title: trimmedTitle,
+            description: trimmedDescription,
             tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
         };
         createTicket(ticketToSubmit).then((newTicket) => {
@@ -51,8 +62,10 @@ function TicketForm({ onTicketAdded }) {
                         value={formData.title}
                         onChange={handleChange}
                         placeholder="Entrez le titre du ticket"
+                        maxLength={MAX_TITLE_LEN}
                         required
                     />
+                    <div className="input-counter">{formData.title.length}/{MAX_TITLE_LEN}</div>
                 </div>
 
                 <div className="form-group">
@@ -63,8 +76,10 @@ function TicketForm({ onTicketAdded }) {
                         value={formData.description}
                         onChange={handleChange}
                         placeholder="Décrivez votre ticket..."
+                        maxLength={MAX_DESC_LEN}
                         required
                     />
+                    <div className="input-counter">{formData.description.length}/{MAX_DESC_LEN}</div>
                 </div>
 
                 <div className="form-row">
@@ -90,7 +105,7 @@ function TicketForm({ onTicketAdded }) {
                             value={formData.priority}
                             onChange={handleChange}
                         >
-                            <option value="Low">Bas</option>
+                            <option value="Low">Faible</option>
                             <option value="Medium">Moyen</option>
                             <option value="High">Élevé</option>
                         </select>
@@ -106,7 +121,9 @@ function TicketForm({ onTicketAdded }) {
                         value={formData.tags}
                         onChange={handleChange}
                         placeholder="ex: bug, fonctionnalité, urgent"
+                        maxLength={MAX_TAGS_LEN}
                     />
+                    <div className="input-counter">{formData.tags.length}/{MAX_TAGS_LEN}</div>
                 </div>
 
                 <button type="submit" className="form-button">

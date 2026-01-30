@@ -1,7 +1,7 @@
 import React from 'react';
 import TicketItem from './TicketItem';
 
-function TicketList({ tickets, onDelete, onStatusChange }) {
+function TicketList({ tickets, onDelete, onUpdate }) {
   if (tickets.length === 0) {
     return (
       <div className="tickets-section">
@@ -22,7 +22,7 @@ function TicketList({ tickets, onDelete, onStatusChange }) {
             key={ticket.id}
             ticket={ticket}
             onDelete={onDelete}
-            onStatusChange={onStatusChange}
+            onUpdate={onUpdate}
           />
         ))}
       </ul>
