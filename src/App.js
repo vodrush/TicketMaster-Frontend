@@ -12,8 +12,21 @@ function App() {
     const [isLeaving, setIsLeaving] = useState(false);
     const [successMessage, setSuccessMessage] = useState(false);
     const [isLeavingSuccess, setIsLeavingSuccess] = useState(false);
+    
+    const [darkMode, setDarkMode] = useState(true);
 
-    // Filtres en édition (changent au fil de la saisie)
+    useEffect(() => {
+        if (darkMode) {
+            document.body.className = 'dark';
+        } else {
+            document.body.className = 'light';
+        }
+    }, [darkMode]);
+
+    function toggleTheme() {
+        setDarkMode(!darkMode);
+    }
+
     const [editingFilters, setEditingFilters] = useState({
         status: '',
         priority: '',
@@ -22,7 +35,6 @@ function App() {
         descending: false
     });
 
-    // Filtres appliqués (ne changent que quand on clique "Appliquer")
     const [appliedFilters, setAppliedFilters] = useState({
         status: '',
         priority: '',
@@ -35,18 +47,18 @@ function App() {
         setLoading(true);
         getTickets(currentFilters)
             .then(data => {
-            setTickets(data);
-            setLoading(false);
+                setTickets(data);
+                setLoading(false);
             })
             .catch(error => {
-            console.error('Error loading tickets:', error);
-            setLoading(false);
+                console.error('Error loading tickets:', error);
+                setLoading(false);
             });
-        }, [appliedFilters]);
+    }, [appliedFilters]);
 
-        useEffect(() => {
+    useEffect(() => {
         loadTickets();
-        }, [loadTickets]);
+    }, [loadTickets]);
 
     const handleApplyFilters = () => {
         setAppliedFilters(editingFilters);
@@ -91,58 +103,105 @@ function App() {
             .catch(error => console.error('Error updating ticket:', error));
     };
 
+    let openCount = 0;
+    let inProgressCount = 0;
+    let closedCount = 0;
+
+    for (let i = 0; i < tickets.length; i++) {
+        if (tickets[i].status === 'Open') {
+            openCount = openCount + 1;
+        }
+        if (tickets[i].status === 'In Progress') {
+            inProgressCount = inProgressCount + 1;
+        }
+        if (tickets[i].status === 'Closed') {
+            closedCount = closedCount + 1;
+        }
+    }
+
     return (
-        <div className="app">
-            <div className="app-header">
-                <h1>TicketMaster</h1>
-            </div>
-
+        <div className="app-container">
             
-
             {deleteMessage && (
-                <div className={`delete-message ${isLeaving ? 'slideOutRight' : 'slideInRight'}`} style={{
-                    padding: '15px',
-                    margin: '20px',
-                    backgroundColor: '#f44336',
-                    color: 'white',
-                    borderRadius: '8px',
-                    textAlign: 'center'
-                }}>
+                <div className={isLeaving ? 'toast toast-danger slideOut' : 'toast toast-danger slideIn'}>
+                    <span className="toast-icon">✕</span>
                     {deleteMessage}
                 </div>
             )}
-
+            
             {successMessage && (
-                <div className={`success-message ${isLeavingSuccess ? 'slideOutRight' : 'slideInRight'}`} style={{
-                    padding: '15px',
-                    margin: '20px',
-                    backgroundColor: '#4CAF50',
-                    color: 'white',
-                    borderRadius: '8px',
-                    textAlign: 'center'
-                }}>
+                <div className={isLeavingSuccess ? 'toast toast-success slideOut' : 'toast toast-success slideIn'}>
+                    <span className="toast-icon">✓</span>
                     {successMessage}
                 </div>
             )}
 
-            <TicketForm onTicketAdded={handleTicketAdded} />
-            <FilterBar
-                filters={editingFilters}
-                onChange={setEditingFilters}
-                onApply={handleApplyFilters}
-                onReset={handleResetFilters}
-            />
-            {loading ? (
-                <div style={{ textAlign: 'center', padding: '40px', color: '#b0b0b0' }}>
-                    Chargement des tickets...
+            <div className="sidebar">
+                
+                <div className="sidebar-header">
+                    <div className="logo">
+                        <span className="logo-icon">◆</span>
+                        <span className="logo-text">TicketMaster</span>
+                    </div>
+                    
+                    <button className="theme-button" onClick={toggleTheme}>
+                        {darkMode ? '☀️' : '🌙'}
+                    </button>
                 </div>
-            ) : (
-                <TicketList
-                    tickets={tickets}
-                    onDelete={handleDelete}
-                    onUpdate={handleUpdateTicket}
+
+                <div className="sidebar-stats">
+                    <div className="stat-box">
+                        <span className="stat-number">{tickets.length}</span>
+                        <span className="stat-text">Total</span>
+                    </div>
+                    <div className="stat-box stat-blue">
+                        <span className="stat-number">{openCount}</span>
+                        <span className="stat-text">Ouverts</span>
+                    </div>
+                    <div className="stat-box stat-yellow">
+                        <span className="stat-number">{inProgressCount}</span>
+                        <span className="stat-text">En cours</span>
+                    </div>
+                    <div className="stat-box stat-green">
+                        <span className="stat-number">{closedCount}</span>
+                        <span className="stat-text">Fermés</span>
+                    </div>
+                </div>
+
+                <div className="sidebar-form">
+                    <TicketForm onTicketAdded={handleTicketAdded} />
+                </div>
+            </div>
+
+            <div className="main-content">
+                
+                <div className="main-header">
+                    <h1>Tous les tickets</h1>
+                    <span className="ticket-count">{tickets.length} tickets</span>
+                </div>
+
+                <FilterBar
+                    filters={editingFilters}
+                    onChange={setEditingFilters}
+                    onApply={handleApplyFilters}
+                    onReset={handleResetFilters}
                 />
-            )}
+
+                <div className="tickets-area">
+                    {loading ? (
+                        <div className="loading">
+                            <div className="spinner"></div>
+                            <p>Chargement des tickets...</p>
+                        </div>
+                    ) : (
+                        <TicketList
+                            tickets={tickets}
+                            onDelete={handleDelete}
+                            onUpdate={handleUpdateTicket}
+                        />
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

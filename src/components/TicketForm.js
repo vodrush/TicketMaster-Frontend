@@ -49,7 +49,7 @@ function TicketForm({ onTicketAdded }) {
     return (
         <>
             <form className="ticket-form" onSubmit={handleSubmit}>
-                <h2 style={{ marginTop: 0, color: '#61dafb', marginBottom: '20px' }}>
+                <h2 style={{ marginTop: 0, marginBottom: '20px' }}>
                     Créer un nouveau ticket
                 </h2>
 

@@ -6,7 +6,7 @@ function TicketList({ tickets, onDelete, onUpdate }) {
     return (
       <div className="tickets-section">
         <h2 className="tickets-title">Mes tickets</h2>
-        <p style={{ color: '#b0b0b0', textAlign: 'center', padding: '20px' }}>
+        <p>
           Aucun ticket pour le moment. Créez-en un pour commencer!
         </p>
       </div>
