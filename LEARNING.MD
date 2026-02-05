@@ -2,19 +2,17 @@ LEARNING.md - Apprentissages et Interactions avec le LLM
 
 Ce document documente les expériences d'apprentissage lors du développement de TicketMaster, incluant les prompts utilisés, les erreurs rencontrées et les corrections apportées.
 
-
 PROMPTS UTILISÉS
 
 Prompt 1 : Structure du Projet et Données
 
-On a commencé par se demander comment structurer le projet pour séparer le backend (API Python) et le frontend (React). 
+On a commencé par se demander comment structurer le projet pour séparer le backend (API Python) et le frontend (React).
 
 On a demandé au LLM: "Comment je dois structurer mon projet pour séparer le backend (API Python) et le frontend (React)? Et quels champs minimums je dois mettre dans un ticket?"
 
 Le LLM a proposé une arborescence avec des dossiers backend et frontend séparés. Il a donné des indices sur les champs nécessaires: id, title, description, status, priority, tags, et timestamps (createdAt et updatedAt). Mais le LLM n'a pas donné le code - seulement les concepts et les questions pour nous orienter.
 
 On a appris que c'est important de penser à la structure AVANT de coder. Comprendre pourquoi chaque dossier existe et comment les champs de données doivent être cohérents dans toute l'application.
-
 
 Prompt 2 : Filtrer les Données - Mode Pédagogique
 
@@ -28,7 +26,6 @@ Grâce à ces indices, on a compris qu'il fallait d'abord vérifier si chaque pa
 
 On a appris que demander au LLM seulement des indices force vraiment à comprendre le problème soi-même. On n'oublie pas le code si on l'a écrit soi-même.
 
-
 Prompt 3 : API REST avec FastAPI - Bien Comprendre l'Archi
 
 Ensuite il fallait construire l'API pour que le frontend puisse faire des opérations CRUD (créer, lire, modifier, supprimer les tickets).
@@ -37,10 +34,9 @@ On a posé la question: "Comment je dois construire une API REST pour que le fro
 
 Le LLM a répondu en posant d'autres questions: Qu'est-ce qu'un endpoint vs une route? GET retourne des données alors que POST/PATCH/DELETE modifient les données, c'est quoi la différence? Comment différencier une création (POST avec status 201) d'une mise à jour (PATCH avec 200)? Qu'est-ce qu'une erreur 404? Quels imports faut-il pour FastAPI?
 
-Après avoir pensé à ces questions, on a compris l'architecture REST. Chaque endpoint devrait charger les données depuis le fichier, faire l'opération demandée, puis sauvegarder. Les status codes HTTP ont du sens: 201 quand on crée quelque chose, 200 quand c'est bon, 404 quand on ne trouve pas ce qu'on cherche.
+Après avoir pensé à ces questions, on a compris l'architecture REST. Les données sont chargées une seule fois en mémoire au démarrage du serveur (pour la performance), chaque endpoint fait l'opération demandée sur cette liste en mémoire, puis sauvegarde dans le fichier JSON après chaque modification. Les status codes HTTP ont du sens: 201 quand on crée quelque chose, 200 quand c'est bon, 404 quand on ne trouve pas ce qu'on cherche.
 
 On a appris que les imports et les décorateurs changent beaucoup en FastAPI. Il faut bien comprendre comment FastAPI organise les routes avant de commencer à taper du code.
-
 
 ERREURS RENCONTRÉES ET CORRECTIONS
 
@@ -54,8 +50,7 @@ On a détecté ce problème en lisant le code et en remarquant que l'URL n'étai
 
 La solution était de créer une constante ou un fichier .env pour configurer l'URL du backend. Ainsi, on pourrait changer l'adresse en un seul endroit sans toucher au reste du code.
 
-Ce qu'on a appris: Il faut toujours utiliser des constantes ou des variables plutôt que du hardcoding. Les adresses IP doivent être configurables.  
-
+Ce qu'on a appris: Il faut toujours utiliser des constantes ou des variables plutôt que du hardcoding. Les adresses IP doivent être configurables.
 
 Erreur 2 : Timestamp Inconsistency
 
@@ -68,7 +63,6 @@ On a découvert ce bug en comparant les deux fonctions côte à côte. On a rema
 La correction est simple: il faut utiliser le même format UTC partout dans l'application. Pas de décalages, pas de +1 heure. Juste UTC standard.
 
 Ce qu'on a appris: Les timestamps doivent être cohérents partout dans l'application. Faut vérifier que toutes les fonctions qui manipulent les dates utilisent le même format. C'est un bon exemple de bug qui se cache facilement si on ne regarde pas attentivement.
-
 
 EXEMPLE : LE LLM S'EST TROMPÉ
 
@@ -85,6 +79,3 @@ Comment on a vérifié l'erreur: On a lu la spec HTTP REST et on a cherché les 
 La correction: On a changé POST pour retourner status_code=201. DELETE retourne 204 No Content si c'est vide, ou 200 si on retourne le ticket supprimé. GET retourne 200. PATCH retourne 200.
 
 Ce qu'on a appris: Le LLM peut faire des suggestions générales mais ne connaît pas toujours les conventions précises. Faut toujours vérifier les standards officiels (spec HTTP, best practices REST) même quand le LLM propose quelque chose. Les codes d'erreur/succès matière pour les clients qui consomment l'API.
-
-
-
